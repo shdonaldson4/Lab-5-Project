@@ -1,0 +1,141 @@
+---
+title: "Lab 5"
+author: "Sarah Donaldson"
+date: "October 21, 2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE) 
+
+```
+
+```{r packages}
+#install.packages("here")
+#install.packages("rio")
+#install.packages("tidyverse")
+#install.packages("janitor")
+#install.packages("skimr")
+#install.packages("dplyr")
+#install.packages("ggplot2")
+library(here)
+library(rio)
+library(tidyverse)
+library(janitor)
+library(skimr)
+library(dplyr)
+library(ggplot2)
+
+
+
+```
+
+1. Create a RStudio Project on your machine.
+
+* Within the Project create a folder for *data* and *scripts*.
+* Download the following three datasets into the project *data* folder.
+  + *sesame13.sav*
+  + *star.csv*
+  + *ais.xlsx*
+
+2. Read in the following three datasets, using `{here}` and `{rio}`:
+  * *sesame13.sav*
+  * *star.csv*
+  * *ais.xlsx*
+  
+**Hint**: For the *ais.xlsx* dataset look at the `skip` argument within the `rio` help documentation.
+  
+```{r import}
+sesame13 <- import(here("data", "sesame13.sav"))
+star <- import(here("data", "star.csv"))
+ais <- import(here("data", "ais.xlsx"), skip = 15)
+
+```
+
+3. Using the `ais` data, compute the average red blood cell count and average bmi by sport. Output these data as SPSS and EXCEL files. 
+
+```{r q2}
+ais_means <- ais %>% 
+  group_by(sport) %>% 
+  summarize(rcc_mean = mean(rcc),
+            bmi_mean = mean(bmi))
+ais_means
+
+export(ais_means, here("data", "ais_means.sav"))
+export(ais_means, here("data", "ais_means.xlsx"))
+```
+
+4. Use the `sesame` dataset to answer the following question: Was the average female age higher in schools or at home? 
+
+On average, female age was higher at home compared to at school.
+
+```{r q3}
+view(sesame13)
+
+sesame13 %>% 
+  characterize() %>% 
+  select(setting, sex) %>% 
+  head()
+
+sesame_fem_age <- sesame13 %>% 
+  #characterize() - maybe adding this will work to say == "Female"
+  filter(sex == "2") %>% 
+  group_by(setting) %>% 
+  summarize(avg_age = mean(age))
+sesame_fem_age
+
+
+```
+
+5. First, how many rows and columns are in the *star* dataset? Next, remove outliers using a really poor method, just for practice, by eliminating students whose math (*tmathss*) scores were more than three standard deviations **above or below** the corresponding mean. How many rows are in the dataset now?
+
+5743 (5 outliers removed)
+
+```{r q4}
+str(star)
+
+star_new <- star %>% 
+  mutate(tmathss_z = scale(tmathss)) %>% 
+  filter(tmathss_z >= -3 & tmathss_z <= 3)
+
+dim(star_new)
+
+#IN CLASS SOLUTION
+star %>% 
+  filter(tmathss <= mean(tmathss) + 3*sd(tmathss) &
+         tmathss >= meanmean(tmathss) + 3*sd(tmathss)
+
+###When filtering, etc., you can also just use a "," for "&"
+```
+
+6. Use the `star` dataset to compute standardized math and reading scores; name these variables *tmathss* and *treadss*. This means, for each of these variables, subtract the mean from each observation and divide by the standard deviation: $x_s = \frac{x_i - \bar{X}}{sd(X)}$. 
+  + Check that your computations were correct by computing the mean and standard deviation of each variable (they should be 0 and 1). 
+  + Compute the mean of the standardized variable for all *sex*/*frl* combinations (I'm asking you to extend what you know here, we haven't talked explicitly about how to do this yet, but you have seen examples). 
+  + What do you make of these findings? Do you see an effect by *sex*? An *FRL* effect? Is there evidence of an interaction (i.e., that the effect of *FRL* is greater for boys versus girls)?
+
+```{r q5}
+star_norm <- star %>% 
+  mutate(tmathss = scale(tmathss), treadss = scale(treadss))
+
+star_descriptives <- star_norm %>% 
+  summarize(avg_tmathss = mean(tmathss),
+            avg_treadss = mean(treadss),
+            sd_tmathss = sd(tmathss),
+            sd_treadss = sd(treadss))
+star_descriptives
+
+star_sex_frl <- star_norm %>% 
+  group_by(sex, frl) %>%
+  summarize(means = mean(tmathss), sds = sd(treadss))
+star_sex_frl
+
+```
+
+I'm not sure what FRL refers to, but overall, it looks like there is a main effect of FRL such that those who were a "yes" scored lower than those who were a "no". It looks like girls scored lower than boys, although an ANOVA would be needed to assess significance. Just based on means, the effect of frl was definitly stronger in boys than in girls!
+
+
+
+
+Please submit your .Rmd file, as well as the rendered .html file.

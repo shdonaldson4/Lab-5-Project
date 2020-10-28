@@ -1,0 +1,68 @@
+---
+title: "Lab 5"
+author: "Sarah Donaldson"
+date: "October 21, 2020"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE) 
+```
+
+1. Create a RStudio Project on your machine.
+
+* Within the Project create a folder for *data* and *scripts*.
+* Download the following three datasets into the project *data* folder.
+  + *sesame13.sav*
+  + *star.csv*
+  + *ais.xlsx*
+
+2. Read in the following three datasets, using `{here}` and `{rio}`:
+  * *sesame13.sav*
+  * *star.csv*
+  * *ais.xlsx*
+  
+**Hint**: For the *ais.xlsx* dataset look at the `skip` argument within the `rio` help documentation.
+  
+```{r import}
+
+
+
+```
+
+3. Using the `ais` data, compute the average red blood cell count and average bmi by sport. Output these data as SPSS and EXCEL files. 
+
+```{r q2}
+
+
+
+```
+
+4. Use the `sesame` dataset to answer the following question: Was the average female age higher in schools or at home? 
+
+```{r q3}
+
+
+
+```
+
+5. First, how many rows and columns are in the *star* dataset? Next, remove outliers using a really poor method, just for practice, by eliminating students whose math (*tmathss*) scores were more than three standard deviations **above or below** the corresponding mean. How many rows are in the dataset now?
+
+```{r q4}
+
+
+  
+```
+
+6. Use the `star` dataset to compute standardized math and reading scores; name these variables *tmathss* and *treadss*. This means, for each of these variables, subtract the mean from each observation and divide by the standard deviation: $x_s = \frac{x_i - \bar{X}}{sd(X)}$. 
+  + Check that your computations were correct by computing the mean and standard deviation of each variable (they should be 0 and 1). 
+  + Compute the mean of the standardized variable for all *sex*/*frl* combinations (I'm asking you to extend what you know here, we haven't talked explicitly about how to do this yet, but you have seen examples). 
+  + What do you make of these findings? Do you see an effect by *sex*? An *FRL* effect? Is there evidence of an interaction (i.e., that the effect of *FRL* is greater for boys versus girls)?
+
+```{r q5}
+
+
+
+```
+
+Please submit you .Rmd file, as well as the rendered .html file.
